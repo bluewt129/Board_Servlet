@@ -1,0 +1,92 @@
+table, tr, td {
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+#container {
+	width: 800px;
+	margin: 50px auto;
+	padding: 0 20px;
+}
+
+.replyList, .replyBest {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+}
+
+.replyList td, .replyBest td {
+	padding: 10px;
+	border: 1px solid #ddd;
+}
+
+.replyList tbody tr:first-child td {
+	background-color: #C4E4EA;
+	padding: 10px;
+	font-weight: bold;
+}
+
+.replyList tbody tr:last-child td {
+	padding: 10px;
+	background-color: #fff;
+}
+
+.replyHeader {
+	position: relative;
+}
+
+.replyHeader .btn, .replyBody .btn {
+	padding: 8px 12px;
+	font-size: 14px;
+}
+
+.replyHeader .btn {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.replyBody .btn {
+	float: right;
+	margin-left: 5px;
+	padding: 5 px;
+	font-size: 10px;
+}
+
+.boardTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+.boardTable td {
+	padding: 10px;
+	border: 1px solid #ddd;
+}
+
+.boardTable tbody td.info {
+	background-color: #E7EAD6;
+}
+
+.btn-group .btn {
+	margin: 5px;
+}
+
+.replyBest {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+	background-color: #fff7c8;
+}
+
+.replyBest td {
+	padding: 10px;
+	border: 1px solid #ddd;
+}
+
+.replyBest tbody tr:first-child td {
+	background-color: #ffff80;
+	padding: 10px;
+	font-weight: bold;
+}

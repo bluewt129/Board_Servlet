@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.min.edu.model.ReplyBoardImpl">
+
+	<resultMap id="ReplyDtoResultMap"
+		type="com.min.edu.dto.ReplyDto">
+		<result property="seq" column="SEQ" />
+		<result property="user_id" column="USER_ID" />
+		<result property="post_id" column="POST_ID" />
+		<result property="rcontent" column="RCONTENT" />
+		<result property="step" column="STEP" />
+		<result property="dept" column="DEPT" />
+		<result property="regdate" column="REGDATE" />
+		<result property="delflag" column="DELFLAG" />
+		<result property="modifydate" column="MODIFYDATE" />
+		<result property="regoodcount" column="GOODCOUNT" />
+		<result property="parent_rseQ" column="PARENT_RSEQ" />
+	</resultMap>
+
+	<!-- 댓글 조회 -->
+	<select id="selectAllReply" resultMap="ReplyDtoResultMap">
+		SELECT
+		SEQ, USER_ID, POST_ID,
+		LPAD(' ', DEPT * 3) || RCONTENT AS RCONTENT,
+		STEP, DEPT, TO_CHAR(REGDATE, 'YYYY-MM-DD HH24:MI:SS') AS REGDATE, DELFLAG,
+		MODIFYDATE, GOODCOUNT, PARENT_RSEQ
+		FROM REPLY
+		WHERE POST_ID = #{post_id}
+		AND DELFLAG = 'N'
+		ORDER BY STEP ASC, DEPT ASC
+
+	</select>
+
+	<!-- 첫댓글 등록 -->
+	<insert id="insertFirstReply">
+		INSERT INTO REPLY (SEQ, USER_ID, POST_ID, RCONTENT,
+		STEP, REGDATE)
+		VALUES((SELECT MAX(SEQ)+1 FROM REPLY), #{user_id},
+		#{post_id}, #{rcontent},
+		(SELECT MAX(STEP)+1 FROM REPLY WHERE POST_ID =
+		128), SYSDATE)
+	</insert>
+
+	<!-- 대댓글 등록 -->
+	<select id="insertReReply">
+		INSERT INTO REPLY (SEQ, USER_ID, POST_ID, RCONTENT,
+		STEP, DEPT, REGDATE)
+		VALUES((SELECT MAX(SEQ)+1 FROM REPLY),
+		#{user_id}, #{post_id}, #{rcontent},
+		#{step}, #{dept}, SYSDATE)
+
+	</select>
+
+	<!-- 댓글 좋아요 update -->
+	<update id="updateReGoodCount">
+		UPDATE REPLY SET GOODCOUNT = GOODCOUNT + 1
+		WHERE SEQ =
+		#{seq}
+	</update>
+
+	<!-- 베스트 댓글 상단 고정 -->
+	<select id="selectBestReply" resultMap="ReplyDtoResultMap">
+		SELECT USER_ID, POST_ID,
+		RCONTENT, GOODCOUNT, REGDATE
+		FROM REPLY
+		WHERE DELFLAG = 'N'
+		AND GOODCOUNT > 0
+		AND POST_ID = #{post_id}
+		ORDER BY GOODCOUNT DESC
+		FETCH FIRST 3 ROWS ONLY
+	</select>
+
+	<!-- 댓글 삭제 -->
+	<update id="deleteReply">
+		UPDATE REPLY SET DELFLAG = 'Y'
+		WHERE SEQ = #{seq}
+	</update>
+	
+	<!-- 게시글 당 댓글 수 -->
+	<select id="countReply" resultType="java.lang.Integer">
+		SELECT COUNT(SEQ)
+		FROM REPLY
+		WHERE POST_ID = #{post_id}
+	</select>
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.min.edu.model.EmpInfoImpl">
+
+	<!-- 로그인 login -->
+	<select id="login" parameterType="java.util.Map"
+		resultType="EmpInfoDto">
+		SELECT ID, NAME, PHONE, ENABLE, AUTH
+		FROM EMPINFO e
+		WHERE ID
+		= #{id} AND PASSWORD = #{password}
+		AND ENABLE = 'Y'
+	</select>
+
+	<!-- 내 정보 조회 -->
+	<select id="selectMyInfo" parameterType="java.lang.String"
+		resultType="EmpInfoDto">
+		SELECT ID, NAME, PHONE, PROFILE_IMG
+		FROM EMPINFO e
+		WHERE ID =
+		#{id}
+	</select>
+
+	<!-- 회원 가입 -->
+	<insert id="joinMember" parameterType="EmpInfoDto">
+		INSERT INTO EMPINFO (ID,
+		PASSWORD, NAME, PHONE, ENABLE, AUTH)
+		VALUES(#{id}, #{password},
+		#{name}, #{phone}, 'D', 'USER')
+	</insert>
+
+	<!-- 회원 전체 조회 -->
+	<select id="selectAllMember" resultType="EmpInfoDto">
+		SELECT ID, PASSWORD,
+		PROFILE_IMG,
+		NAME, PHONE, AUTH, ENABLE
+		FROM EMPINFO e
+	</select>
+
+	<!-- 회원 전체 조회 -->
+	<select id="enableMember" parameterType="java.lang.String"
+		resultType="EmpInfoDto">
+		SELECT ID, PASSWORD, PROFILE_IMG,
+		NAME, PHONE, AUTH, ENABLE
+		FROM EMPINFO e
+		WHERE ENABLE = #{enable}
+	</select>
+
+	<!-- 가입 승인 대기중인 회원 전체 조회 -->
+	<select id="waitJoin" parameterType="java.util.Map"
+		resultType="EmpInfoDto">
+		SELECT ID, PASSWORD, NAME, PHONE, AUTH, ENABLE
+		FROM EMPINFO
+		e
+		WHERE ENABLE = 'D'
+	</select>
+
+	<!-- 회원가입 승인 일괄 조정 -->
+	<update id="accessJoin" parameterType="java.util.List">
+		UPDATE EMPINFO SET ENABLE = 'Y'
+		WHERE ID IN
+		<foreach collection="list" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<!-- 회원가입 거절 일괄 조정 -->
+	<update id="rejectJoin" parameterType="java.util.List">
+		UPDATE EMPINFO SET ENABLE = 'F'
+		WHERE ID IN
+		<foreach collection="list" item="id" open="(" separator=","
+			close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<update id="updateProfileImg" parameterType="java.util.Map">
+		UPDATE EMPINFO SET PROFILE_IMG = #{profile_img}
+		WHERE ID = #{id}
+	</update>
+
+	<update id="deleteMember" parameterType="java.lang.String">
+		UPDATE EMPINFO SET ENABLE = 'N'
+		WHERE ID = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.min.edu.model.EduBoardImpl">
+
+	<!-- 글 전체 조회 selectAllBoard -->
+
+	<select id="selectAllBoard" resultType="EduBoardDto"
+		parameterType="java.util.Map">
+		SELECT SEQ, ID, TITLE, CREATEAT, GOODCOUNT, REPLY_COUNT
+		FROM (
+		SELECT B.SEQ, B.ID, B.TITLE, B.GOODCOUNT, TO_CHAR(B.CREATEAT, 'YYYY-MM-DD')
+		AS CREATEAT,
+		ROW_NUMBER() OVER(ORDER BY B.GOODCOUNT DESC) AS RN,
+		COUNT(CASE WHEN R.DELFLAG = 'N' THEN R.POST_ID END) AS REPLY_COUNT
+		FROM EDUBOARD B
+		LEFT JOIN REPLY R ON B.SEQ = R.POST_ID
+		WHERE B.DELFLAG = 'N'
+		GROUP BY B.SEQ, B.ID, B.TITLE, B.GOODCOUNT, B.CREATEAT
+		)
+		WHERE RN BETWEEN #{first} AND #{last}
+	</select>
+
+	<!-- countMyBoard -->
+	<select id="countBoard" resultType="java.lang.Integer">
+		SELECT COUNT(SEQ)
+		FROM
+		EDUBOARD
+		WHERE DELFLAG = 'N'
+	</select>
+
+	<!-- countMyBoard -->
+	<select id="countMyBoard" resultType="java.lang.Integer">
+		SELECT COUNT(SEQ)
+		FROM
+		EDUBOARD
+		WHERE DELFLAG = 'N'
+		AND ID = #{id}
+	</select>
+
+	<!-- 글 상세 조회 selectDetailBoard -->
+	<select id="selectDetailBoard" parameterType="java.lang.String"
+		resultType="EduBoardDto">
+		SELECT SEQ, ID, TITLE, CONTENT, GOODCOUNT, READCOUNT,
+		TO_CHAR(CREATEAT,
+		'YYYY-MM-DD')
+		AS CREATEAT
+		FROM EDUBOARD e
+		WHERE DELFLAG = 'N'
+		AND SEQ = #{seq}
+	</select>
+
+	<!-- 내 글 조회 -->
+	<select id="selectMyBoard" resultType="EduBoardDto"
+		parameterType="java.util.Map">
+		SELECT SEQ, ID, TITLE, CONTENT, GOODCOUNT, CREATEAT,
+		READCOUNT
+		FROM
+		(
+		SELECT SEQ, ID, READCOUNT, CONTENT, GOODCOUNT,
+		TITLE,
+		TO_CHAR(CREATEAT,
+		'YYYY-MM-DD') AS CREATEAT,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		SEQ DESC) AS RN
+		FROM EDUBOARD
+		WHERE DELFLAG = 'N'
+		AND ID =
+		#{id}
+		)
+		WHERE RN
+		BETWEEN #{first}
+		AND #{last}
+	</select>
+
+	<!-- 글 작성 insertBoard -->
+	<insert id="insertBoard" parameterType="EduBoardDto">
+		INSERT INTO EDUBOARD e
+		(SEQ, ID, TITLE, CONTENT, DELFLAG, CREATEAT)
+		VALUES((SELECT MAX(SEQ)+1
+		AS SEQ FROM EDUBOARD), #{id}, #{title}, #{content}, 'N',
+		SYSDATE)
+	</insert>
+
+	<!-- 글 수정 modifyBoard -->
+	<update id="modifyBoard" parameterType="EduBoardDto">
+		UPDATE EDUBOARD SET
+		CONTENT = #{content}
+		WHERE SEQ = #{seq}
+	</update>
+
+	<!-- 글 삭제 deleteBoard -->
+	<delete id="deleteBoard" parameterType="java.lang.String">
+		UPDATE EDUBOARD SET
+		DELFLAG ='Y'
+		WHERE SEQ = #{seq}
+	</delete>
+
+	<!-- 다중글삭제 mutiDeleteBoard -->
+	<delete id="mutiDeleteBoard" parameterType="java.util.List">
+		UPDATE EDUBOARD SET DELFLAG ='Y'
+		WHERE SEQ IN
+		<foreach collection="list" item="seq" open="(" separator=","
+			close=")">
+			#{seq}
+		</foreach>
+	</delete>
+
+	<!-- 좋아요 카운트 -->
+	<update id="updateGoodCount">
+		UPDATE EDUBOARD
+		SET
+		GOODCOUNT = (SELECT
+		MAX(GOODCOUNT)+1 FROM EDUBOARD e WHERE SEQ =
+		#{seq})
+		WHERE SEQ = #{seq}
+	</update>
+
+	<!-- 인기글 조회 -->
+	<select id="selectBestBoard" resultType="EduBoardDto">
+		SELECT SEQ, ID, TITLE,
+		READCOUNT,
+		CREATEAT, GOODCOUNT
+		FROM (
+		SELECT SEQ, ID, TITLE, READCOUNT,
+		GOODCOUNT,
+		TO_CHAR(CREATEAT, 'YYYY-MM-DD') AS
+		CREATEAT,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		GOODCOUNT DESC) AS RN
+		FROM EDUBOARD
+		WHERE DELFLAG = 'N')
+		WHERE RN BETWEEN
+		1 AND 10
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="updateReadCount" parameterType="java.lang.String">
+		UPDATE EDUBOARD SET
+		READCOUNT =
+		(SELECT MAX(READCOUNT)+1 FROM EDUBOARD e
+		WHERE SEQ = #{seq})
+		WHERE SEQ = #{seq}
+	</update>
+</mapper>

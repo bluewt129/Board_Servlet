@@ -1,0 +1,13 @@
+2024-06-19 09:04:51 DEBUG LogFactory:109 - Logging initialized using 'class org.apache.ibatis.logging.slf4j.Slf4jImpl' adapter.
+2024-06-19 09:04:51 DEBUG PooledDataSource:373 - PooledDataSource forcefully closed/removed all connections.
+2024-06-19 09:04:51 DEBUG PooledDataSource:373 - PooledDataSource forcefully closed/removed all connections.
+2024-06-19 09:04:51 DEBUG PooledDataSource:373 - PooledDataSource forcefully closed/removed all connections.
+2024-06-19 09:04:51 DEBUG PooledDataSource:373 - PooledDataSource forcefully closed/removed all connections.
+2024-06-19 09:04:51 DEBUG JdbcTransaction:143 - Opening JDBC Connection
+2024-06-19 09:04:52 DEBUG PooledDataSource:448 - Created connection 731829978.
+2024-06-19 09:04:52 DEBUG JdbcTransaction:107 - Setting autocommit to false on JDBC Connection [oracle.jdbc.driver.T4CConnection@2b9ed6da]
+2024-06-19 09:04:52 DEBUG login:137 - ==>  Preparing: SELECT ID, NAME, PHONE, AUTH FROM EMPINFO e WHERE ID = ? AND PASSWORD = ? AND ENABLE = 'Y'
+2024-06-19 09:04:52 DEBUG login:137 - ==> Parameters: USER(String), USER(String)
+2024-06-19 09:04:52 TRACE login:143 - <==    Columns: ID, NAME, PHONE, AUTH
+2024-06-19 09:04:52 TRACE login:143 - <==        Row: USER, »ç¿ëÀÚ, 119, USER
+2024-06-19 09:04:52 DEBUG login:137 - <==      Total: 1
